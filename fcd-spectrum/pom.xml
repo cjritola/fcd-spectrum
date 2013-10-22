@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ritolaaudio</groupId>
+  <artifactId>fcd-spectrum</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>FCD Spectrum</name>
+  <description>Unofficial spectrum analyzer for FUNCube Dongle Pro+</description>
+  <url>http://code.google.com/p/fcd-spectrum/</url>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.ritolaaudio</groupId>
+  		<artifactId>jfcdpp</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>net.sourceforge.jtransforms</groupId>
+  		<artifactId>jtransforms</artifactId>
+  		<version>2.4.0</version>
+  	</dependency>
+  </dependencies>
+  <build>
+	  <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>    
+        </plugins>
+  </build>
+</project>
