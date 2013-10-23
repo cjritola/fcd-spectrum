@@ -76,8 +76,12 @@ public class FCDPPTuner implements Tuner
 		{
 		for(Info mixerInfo:AudioSystem.getMixerInfo())
 			{
-			System.out.println("Mixer: "+mixerInfo.getName()+" Vendor: "+mixerInfo.getVendor()+" Version: "+mixerInfo.getVersion());
-			if(mixerInfo.getName().contains("V20") && mixerInfo.getDescription().contains("FUNcube Dongle"))
+			System.out.println("\n Mixer: "+mixerInfo.getName()+
+					"\n Vendor: "+mixerInfo.getVendor()+
+					"\n Version: "+mixerInfo.getVersion()+
+					"\n Description: "+mixerInfo.getDescription());
+			if(mixerInfo.getName().contains("V20") && mixerInfo.getDescription().contains("FUNcube Dongle")||//Linux
+					mixerInfo.getName().toUpperCase().contains("FUNCUBE"))//Windows displays it differently
 				{//Probably found it.
 				Mixer mixer = AudioSystem.getMixer(mixerInfo);
 				try
@@ -94,7 +98,7 @@ public class FCDPPTuner implements Tuner
 						{
 						TargetDataLine line = (TargetDataLine)mixer.getLine(lineInfo);
 						//System.out.println("Line buffer size: "+line.getBufferSize());
-						line.open(new AudioFormat(192000, 32, 2, true,true),1024);
+						line.open(new AudioFormat(192000, 16, 2, true,true),1024);//16->32
 						//System.out.println("Line format: "+line.getFormat());
 						capture=line;
 						return;

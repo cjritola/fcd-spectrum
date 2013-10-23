@@ -21,18 +21,18 @@ package com.ritolaaudio.fcdspectrum;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
-import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import javax.sound.sampled.TargetDataLine;
 
-import com.ritolaaudio.jfcdpp.TunerException;
 import com.ritolaaudio.fcdspectrum.tuner.Tuner;
+import com.ritolaaudio.jfcdpp.TunerException;
 
 public class SampleReader
 	{
 	//private final DoubleBuffer complexBuffer = DoubleBuffer.wrap(new double[1024*2]);
 	private final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[4*1024*2]).order(ByteOrder.BIG_ENDIAN);
-	private final IntBuffer intBuffer = byteBuffer.asIntBuffer();
+	private final ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
 	private final Tuner tuner;
 	private final TargetDataLine line;
 	private double peakMagnitude=0;
@@ -64,13 +64,14 @@ public class SampleReader
 		//System.out.println("frames read: "+framesRead);
 		DoubleBuffer complexBuffer = DoubleBuffer.wrap(bufferToUse);
 		byteBuffer.clear();
-		intBuffer.clear();
+		shortBuffer.clear();
 		peakMagnitude=0;
 		if(framesRead*2!=bufferToUse.length)System.out.println("Frame size mismatch. Expected "+bufferToUse.length+" got "+framesRead*2);
+		//final double WORD_SCALE=(long)Math.pow(2, line.getFormat().getSampleSizeInBits()-1);
 		for(int i=0; i<framesRead; i++)
 			{
-			final double real=(double)intBuffer.get()/(double)Integer.MAX_VALUE;
-			final double complex=(double)intBuffer.get()/(double)Integer.MAX_VALUE;
+			final double real=(double)shortBuffer.get()/(double)Short.MAX_VALUE;
+			final double complex=(double)shortBuffer.get()/(double)Short.MAX_VALUE;
 			final double magnitude = Math.sqrt(real*real+complex*complex);
 			complexBuffer.put(real);
 			complexBuffer.put(complex);
