@@ -63,7 +63,7 @@ public class LoggingGUI extends JFrame
 	public LoggingGUI()
 		{
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 750, 700);
 		setTitle("Log");
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

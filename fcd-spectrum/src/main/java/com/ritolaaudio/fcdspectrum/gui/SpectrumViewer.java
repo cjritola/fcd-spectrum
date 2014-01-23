@@ -47,6 +47,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 import com.ritolaaudio.fcdspectrum.SpectrumData;
+import com.ritolaaudio.fcdspectrum.guides.OverallFrequencyGuide;
+import com.ritolaaudio.fcdspectrum.guides.UHFFrequencyGuide;
 
 public class SpectrumViewer extends JFrame
 	{
@@ -56,6 +58,7 @@ public class SpectrumViewer extends JFrame
 	private final JLayeredPane layeredGraphPane;
 	private SweepGraph sweepGraph;
 	private Grid sweepGrid;
+	private FrequencyGuideOverlay frequencyGuideOverlay;
 	private JScrollBar frequencyScroll;
 	private final JButton zoomInButton = new JButton("Zoom In");
 	private final JButton zoomOutButton = new JButton("Zoom Out");
@@ -160,8 +163,7 @@ public class SpectrumViewer extends JFrame
 		backgroundPanel.setBackground(Color.black);
 		layeredGraphPane.setLayer(backgroundPanel, 0);
 		layeredGraphPane.add(backgroundPanel);
-		try
-			{
+		try {
 			SpectrumData data = new SpectrumData(new FileInputStream(csv));
 			sweepGraph = new SweepGraph(data);
 			data.addSpectrumLoadProcessListener(new SpectrumLoadProcessListener()
@@ -216,6 +218,9 @@ public class SpectrumViewer extends JFrame
 			return;
 			}
 		*/
+		frequencyGuideOverlay = new FrequencyGuideOverlay();
+		frequencyGuideOverlay.setFrequencyGuide(new OverallFrequencyGuide());
+		
 		sweepGrid = new Grid(
 				sweepGraph.getData().getStartFreq(),
 				sweepGraph.getData().getEndFreq(),
@@ -228,8 +233,10 @@ public class SpectrumViewer extends JFrame
 		layeredGraphPane.setBackground(Color.black);
 		layeredGraphPane.setLayer(sweepGraph, 4);
 		layeredGraphPane.setLayer(sweepGrid, 5);
+		layeredGraphPane.setLayer(frequencyGuideOverlay, 6);
 		layeredGraphPane.add(sweepGraph);
 		layeredGraphPane.add(sweepGrid);
+		layeredGraphPane.add(frequencyGuideOverlay);
 		
 		frequencyScroll = new JScrollBar();
 		GridBagConstraints gbc_frequencyScroll = new GridBagConstraints();
@@ -248,6 +255,7 @@ public class SpectrumViewer extends JFrame
 		
 		sweepGraph.setStartX(frequencyScroll.getValue());
 		sweepGrid.setStartX(((double)frequencyScroll.getValue()));
+		frequencyGuideOverlay.setStartFreq(frequencyScroll.getValue());
 		
 		JPanel infoPanel = new JPanel();
 		GridBagConstraints gbc_infoPanel = new GridBagConstraints();
@@ -304,6 +312,8 @@ public class SpectrumViewer extends JFrame
 		sweepGrid.setStartY(sweepGraph.getRawData().getMinPower());
 		sweepGrid.setEndY(sweepGraph.getRawData().getMaxPower());
 		sweepGrid.setDivY(sweepGraph.getRawData().getDynamicRange()/10);
+		frequencyGuideOverlay.setStartFreq((int)sweepGrid.getStartX());
+		frequencyGuideOverlay.setEndFreq((int)sweepGrid.getEndX());
 		updateGraphView();
 		}
 	

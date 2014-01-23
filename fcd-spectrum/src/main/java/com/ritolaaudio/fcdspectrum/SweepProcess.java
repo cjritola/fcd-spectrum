@@ -18,17 +18,18 @@
  ******************************************************************************/
 package com.ritolaaudio.fcdspectrum;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.Logger;
 
-import com.ritolaaudio.jfcdpp.TunerException;
 import com.ritolaaudio.fcdspectrum.tuner.AudioCaptureAcquisitionException;
 import com.ritolaaudio.fcdspectrum.tuner.FCDPPTuner;
 import com.ritolaaudio.fcdspectrum.tuner.FuncubeNotFoundException;
 import com.ritolaaudio.fcdspectrum.tuner.TimeoutFencedTuner;
 import com.ritolaaudio.fcdspectrum.tuner.TrackableTuner;
+import com.ritolaaudio.jfcdpp.TunerException;
 
 public class SweepProcess implements SweepControl
 	{
@@ -56,7 +57,7 @@ public class SweepProcess implements SweepControl
 		log.info("SweepProcess.startSweep() Starting sweep process...");
 		SweepProcess.this.feedback=feedback;
 		log.info("Creating tuner...");
-		tuner = new TrackableTuner(new TimeoutFencedTuner(new FCDPPTuner(log)));
+		tuner = new TrackableTuner(new TimeoutFencedTuner(new FCDPPTuner(log,Configuration.CONFIGURATION.getBackend())));
 		log.info("Creating SampleReader...");
 		reader = new SampleReader(tuner);
 		log.info("Creating FFT Reader...");
@@ -67,6 +68,13 @@ public class SweepProcess implements SweepControl
 		complexBuffer = new double[job.getBufferSizeInFrames()*2];
 		log.info("Created complexBuffer of size "+complexBuffer.length);
 		log.info("Creating PrintStream for target file");
+		final File targetFile = job.getTargetFile();
+		if(!targetFile.exists())
+			{
+			log.info("Attempting to create file "+targetFile.getAbsolutePath());
+			if(!targetFile.createNewFile())
+				{throw new IOException("Failed to create new file:\n"+targetFile.getAbsolutePath());}
+			}
 		ps = new PrintStream(new FileOutputStream(job.getTargetFile()));
 		setupSweep();
 		record();
@@ -89,41 +97,42 @@ public class SweepProcess implements SweepControl
 		final Object captureWait = new Object();
 		final Object [] run = new Object[1];
 		run[0]=new Object();
-		try
-			{
-			new Thread()
-				{
-				public void run()
-					{
-					Thread.currentThread().setName("Sweep Thread");
-					log.info("Sweep thread started...");
-					feedback.initializing();
-					try
-						{
-						for(int step=0; step<numSteps;step++)
-							{
-							for(double subStep=step; subStep<step+.5; subStep+=.25)
-								{
-								adjustFrequency(subStep);
-								waitForStabilization();
-								measurePeak();
-								adjustGain();
-								waitForStabilization();
-								performSample(subStep);
-								if(!running)throw new InterruptedException("Somebody set variable SweepProcess.running to 'false.' Probably clicked `abort`.");
-								}
-							}//end while(isActive)
-						feedback.sweepComplete();
-						feedback.savingSweep(job.getTargetFile());
-						ps.println("Frequency(Hz),Amplitude(dBm)");
-						for(int i=0; i<sweepData.length;i++)
-							{ps.println((double)i*FREQUENCY_FFT_UNIT_SIZE+job.getStartFrequency()+","+sweepData[i]);}
-						}//end try{}
-					catch(InterruptedException e){log.warning("Sweep thread loop interrupted due to InterruptedException: "+e.getLocalizedMessage());}
-					ps.close();
-					synchronized(captureWait){captureWait.notifyAll();}
-					}//end run()
-				}.start();
+		if(job.getManualGain()!=null)totalDongleGainInDb=job.getManualGain();
+		try{
+		new Thread(){
+			public void run(){
+				Thread.currentThread().setName("Sweep Thread");
+				log.info("Sweep thread started...");
+				feedback.initializing();
+				try{
+				for(int step=0; step<numSteps;step++){
+				  for(double subStep=step; subStep<step+.5; subStep+=.25){
+				  adjustFrequency(subStep);
+				  waitForStabilization();
+				  measurePeak();
+				  System.out.println("Gain:"+job.getManualGain());
+				  if(job.getManualGain()==null){
+				    adjustGain();
+				    waitForStabilization();
+				   }else{try{
+				      tuner.setGain((Integer)job.getManualGain());}
+				   catch(TunerException e){e.printStackTrace();}}
+						
+				   performSample(subStep);
+				   if(!running)throw new InterruptedException("Somebody set variable SweepProcess.running to 'false.' Probably clicked `abort`.");
+				    }
+				}//end while(isActive)
+				feedback.sweepComplete();
+				feedback.savingSweep(job.getTargetFile());
+				ps.println("Frequency(Hz),Amplitude(dBm)");
+				for(int i=0; i<sweepData.length;i++)
+				 {ps.println((double)i*FREQUENCY_FFT_UNIT_SIZE+job.getStartFrequency()+","+sweepData[i]);}
+				}//end try{}
+				catch(InterruptedException e){log.warning("Sweep thread loop interrupted due to InterruptedException: "+e.getLocalizedMessage());}
+				ps.close();
+				synchronized(captureWait){captureWait.notifyAll();}
+				}//end run()
+			   }.start();
 			//Wait for the thread to finish.
 			synchronized(captureWait){try{captureWait.wait();}catch(InterruptedException e){e.printStackTrace();}}
 			tuner.getTargetDataLine().stop();

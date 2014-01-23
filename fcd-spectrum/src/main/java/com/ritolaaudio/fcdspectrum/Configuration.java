@@ -31,10 +31,14 @@ public class Configuration
 	private String outputCSVPath="output.csv";
 	private int startFreq=88000000;
 	private int endFreq=108000000;
+	private Class<?> backend = com.ritolaaudio.jfcdpp.autoselect.Dongles.class;
+	private Integer manualGain = null;
 	
-	public static final Configuration CONFIGURATION = loadConfiguration();
+	public static final Configuration CONFIGURATION;
+	
 	static
 		{
+		CONFIGURATION=loadConfiguration();
 		Runtime.getRuntime().addShutdownHook(new Thread()
 			{
 			@Override
@@ -135,4 +139,28 @@ public class Configuration
 		{
 		this.endFreq = endFreq;
 		}
+
+	public Class<?> getBackend()
+		{
+		return backend;
+		}
+	
+	public void setBackend(Class<?> backend)
+		{
+		this.backend=backend;
+		}
+
+	/**
+	 * @return the manualGain
+	 */
+	public Integer getManualGain() {
+	    return manualGain;
+	}
+
+	/**
+	 * @param manualGain the manualGain to set
+	 */
+	public void setManualGain(Integer manualGain) {
+	    this.manualGain = manualGain;
+	}
 	}//end Configuration

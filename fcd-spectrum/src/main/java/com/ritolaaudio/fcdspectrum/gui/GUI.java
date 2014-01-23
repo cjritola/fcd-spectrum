@@ -28,8 +28,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -60,7 +62,7 @@ public class GUI
 		{try{
 		for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) 
 			{
-			if ("Nimbus".equals(info.getName())) 
+			if ("Nimbus".equals(info.getName()))
 				{
 				UIManager.setLookAndFeel(info.getClassName());
 				break;
@@ -113,7 +115,7 @@ public class GUI
 		{
 		frmSweeper = new JFrame();
 		frmSweeper.setTitle("Sweeper");
-		frmSweeper.setBounds(100, 100, 452, 214);
+		frmSweeper.setBounds(100, 100, 452, 234);
 		frmSweeper.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmSweeper.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -122,9 +124,9 @@ public class GUI
 		frmSweeper.getContentPane().add(root, BorderLayout.NORTH);
 		GridBagLayout gbl_root = new GridBagLayout();
 		gbl_root.columnWidths = new int[]{169, 101, 90, 0};
-		gbl_root.rowHeights = new int[]{0, 0, 0, 0, 0};
+		gbl_root.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
 		gbl_root.columnWeights = new double[]{0.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_root.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gbl_root.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
 		root.setLayout(gbl_root);
 		
 		JLabel lblFrequency = new JLabel("Start Frequency");
@@ -219,26 +221,77 @@ public class GUI
 		gbc_lblSamples.gridy = 2;
 		root.add(lblSamples, gbc_lblSamples);
 		
+		JLabel lblMixerGain = new JLabel("Total Gain");
+		GridBagConstraints gbc_lblMixerGain = new GridBagConstraints();
+		gbc_lblMixerGain.anchor = GridBagConstraints.EAST;
+		gbc_lblMixerGain.insets = new Insets(0, 0, 5, 5);
+		gbc_lblMixerGain.gridx = 0;
+		gbc_lblMixerGain.gridy = 3;
+		root.add(lblMixerGain, gbc_lblMixerGain);
+		
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 1;
+		gbc_panel.gridy = 3;
+		root.add(panel, gbc_panel);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+		
+		final JCheckBox chckbxAuto = new JCheckBox("Auto");
+		chckbxAuto.setSelected(Configuration.CONFIGURATION.getManualGain()==null);
+		panel.add(chckbxAuto);
+		
+		final JSpinner spinner = new JSpinner();
+		spinner.setModel(new SpinnerNumberModel(0, 0, 50, 1));
+		spinner.setEnabled(Configuration.CONFIGURATION.getManualGain()!=null);
+		if(spinner.isEnabled()){spinner.setValue(Configuration.CONFIGURATION.getManualGain());}
+		panel.add(spinner);
+		spinner.addChangeListener(new ChangeListener(){
+		    @Override
+		    public void stateChanged(ChangeEvent evt) {
+			Configuration.CONFIGURATION.setManualGain((Integer)spinner.getValue());
+		    }//end stateChanged(...)
+		});
+		
+		chckbxAuto.addChangeListener(new ChangeListener(){
+		    @Override
+		    public void stateChanged(ChangeEvent evt) {
+			spinner.setEnabled(!chckbxAuto.isSelected());
+			if(chckbxAuto.isSelected()){
+			    Configuration.CONFIGURATION.setManualGain(null);
+			}else{Configuration.CONFIGURATION.setManualGain((Integer)spinner.getValue());}
+		    }
+		});
+		
+		JLabel lblDb = new JLabel("dB");
+		GridBagConstraints gbc_lblDb = new GridBagConstraints();
+		gbc_lblDb.anchor = GridBagConstraints.WEST;
+		gbc_lblDb.insets = new Insets(0, 0, 5, 0);
+		gbc_lblDb.gridx = 2;
+		gbc_lblDb.gridy = 3;
+		root.add(lblDb, gbc_lblDb);
+		
 		JLabel lblWriteResultsTo = new JLabel("Write CSV Results To:");
 		GridBagConstraints gbc_lblWriteResultsTo = new GridBagConstraints();
 		gbc_lblWriteResultsTo.anchor = GridBagConstraints.EAST;
 		gbc_lblWriteResultsTo.insets = new Insets(0, 0, 0, 5);
 		gbc_lblWriteResultsTo.gridx = 0;
-		gbc_lblWriteResultsTo.gridy = 3;
+		gbc_lblWriteResultsTo.gridy = 4;
 		root.add(lblWriteResultsTo, gbc_lblWriteResultsTo);
 		
 		final JLabel filePath = new JLabel(Configuration.CONFIGURATION.getOutputCSVPath());
 		GridBagConstraints gbc_filePath = new GridBagConstraints();
 		gbc_filePath.insets = new Insets(0, 0, 0, 5);
 		gbc_filePath.gridx = 1;
-		gbc_filePath.gridy = 3;
+		gbc_filePath.gridy = 4;
 		root.add(filePath, gbc_filePath);
 		
 		JButton specifyButton = new JButton("Specify");
 		GridBagConstraints gbc_btnSelect = new GridBagConstraints();
 		gbc_btnSelect.anchor = GridBagConstraints.WEST;
 		gbc_btnSelect.gridx = 2;
-		gbc_btnSelect.gridy = 3;
+		gbc_btnSelect.gridy = 4;
 		root.add(specifyButton, gbc_btnSelect);
 		specifyButton.addActionListener(new ActionListener()
 			{public void actionPerformed(ActionEvent evt)
@@ -273,7 +326,7 @@ public class GUI
 		executeButton.addActionListener(new ActionListener()
 			{public void actionPerformed(ActionEvent evt)
 				{
-				new SweepProgressDialog(new SweepJob((Integer)startFrequency.getValue(),(Integer)endFrequency.getValue(),outputFile,guiLogger));
+				new SweepProgressDialog(new SweepJob((Integer)startFrequency.getValue(),(Integer)endFrequency.getValue(),!chckbxAuto.isSelected()?(Integer)spinner.getValue():null,outputFile,guiLogger));
 				guiLogger.info("User clicked 'execute'");
 				}});
 		

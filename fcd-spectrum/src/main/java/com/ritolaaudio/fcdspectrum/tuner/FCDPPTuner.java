@@ -19,7 +19,7 @@
 package com.ritolaaudio.fcdspectrum.tuner;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
@@ -30,9 +30,8 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
 import javax.sound.sampled.TargetDataLine;
 
-import com.ritolaaudio.jfcdpp.TunerException;
-import com.ritolaaudio.jfcdpp.javahidapi.Dongles;//Change this package to change backends
-import com.ritolaaudio.jfcdpp.javahidapi.FCDPP;//Change this package to change backends
+import com.ritolaaudio.jfcdpp.Dongles;
+import com.ritolaaudio.jfcdpp.FCDPP;
 
 public class FCDPPTuner implements Tuner
 	{
@@ -55,11 +54,18 @@ public class FCDPPTuner implements Tuner
 	//private BufferFormat bufferFormat;
 	
 	public FCDPPTuner() throws AudioCaptureAcquisitionException, FuncubeNotFoundException, IOException
-		{this(Logger.getGlobal());}
+		{this(com.ritolaaudio.jfcdpp.javahidapi.Dongles.class);}
 	
 	public FCDPPTuner(Logger logger) throws AudioCaptureAcquisitionException, FuncubeNotFoundException, IOException
+		{this(logger, com.ritolaaudio.jfcdpp.javahidapi.Dongles.class);}
+	
+	public FCDPPTuner(Class<?> backendToUse) throws AudioCaptureAcquisitionException, FuncubeNotFoundException, IOException
+		{this(Logger.getGlobal(), backendToUse);}
+	
+	public FCDPPTuner(Logger logger, Class<?> backendToUse) throws AudioCaptureAcquisitionException, FuncubeNotFoundException, IOException
 		{
-		List<FCDPP> dongles= Dongles.getDongles();
+		ArrayList<FCDPP> dongles = new ArrayList<FCDPP>();
+		Dongles.getDongles(dongles,backendToUse);
 		log=logger;
 		if(dongles.isEmpty()){throw new FuncubeNotFoundException("Failed to find a FunCube Dongle");}
 		dongle = dongles.get(0);
@@ -84,18 +90,16 @@ public class FCDPPTuner implements Tuner
 					mixerInfo.getName().toUpperCase().contains("FUNCUBE"))//Windows displays it differently
 				{//Probably found it.
 				Mixer mixer = AudioSystem.getMixer(mixerInfo);
-				try
-				{mixer.open();}
+				try{mixer.open();}
 				catch(LineUnavailableException e){throw new AudioCaptureAcquisitionException(e);}
 				//System.out.println("Found candidate: "+mixerInfo.getName()+" "+mixerInfo.getDescription());
 				//System.out.println(mixer.getTargetLineInfo().length);
 				Line.Info[] lineInfos = mixer.getTargetLineInfo();
 				if(lineInfos.length>=1)
 					{
-					if(lineInfos.length>1){log.warning("Candidate capture card"+mixerInfo.getDescription()+" has more than 1 port! Assuming first port.");}
+					if(lineInfos.length>1){log.warning("Candidate capture card "+mixerInfo.getDescription()+" has more than 1 port! Assuming first port.");}
 					Line.Info lineInfo = lineInfos[0];
-					try
-						{
+					try {
 						TargetDataLine line = (TargetDataLine)mixer.getLine(lineInfo);
 						//System.out.println("Line buffer size: "+line.getBufferSize());
 						line.open(new AudioFormat(192000, 16, 2, true,true),1024);//16->32
@@ -107,9 +111,7 @@ public class FCDPPTuner implements Tuner
 						{throw new AudioCaptureAcquisitionException(e);}
 					}
 				else
-					{
-					throw new AudioCaptureAcquisitionException("Found a likely card but it doesn't have any capture ports.");
-					}
+					{throw new AudioCaptureAcquisitionException("Found a likely card but it doesn't have any capture ports.");}
 				/*for(Line.Info lInfo:mixer.getTargetLineInfo())
 					{
 					System.out.println(lInfo);
@@ -129,16 +131,22 @@ public class FCDPPTuner implements Tuner
 	@Override
 	public void setGain(int requestedGainInDb)
 		{
+	    	//Gains are turned on front(input jack)-to-back(ADC) to minimize self-noise.
+	    	
+	    	//If we're above 32MHz, we already have 30dB of LNA #2 gain whether we want it or not. NF uknown.
 		if(dongleTunerFrequency>32000000){requestedGainInDb-=30;}
-		
+		//If there's still 20dB of gain or more requested after that, then LNA #1 can be turned on (the nice 3dB NF one)
 		if(requestedGainInDb>20)
 			{dongle.setLNA(true);requestedGainInDb-=20;}
 		else{dongle.setLNA(false);}
-		if(requestedGainInDb>12)
+		//If there are still at least 12dB requested after that, then we try turning on the 12dB of mixer gain.
+		if(requestedGainInDb>=12)
 			{dongle.setMixerGain(true);
 			requestedGainInDb-=12;}
 		else{dongle.setMixerGain(false);}
+		//And for the remainder we adjust the gain on the ADC.
 		if(requestedGainInDb>=0)dongle.setIFGain(requestedGainInDb);
+		else dongle.setIFGain(0);
 		}
 	/*
 	@Override

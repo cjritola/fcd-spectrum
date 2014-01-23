@@ -40,7 +40,7 @@ public class CLI implements SweepProcessFeedback
 		try{endFreq=Integer.parseInt(args[1]);}
 		catch(NumberFormatException e){printUsageInstructions("end_frequency_hz must be a whole number in hertz, with no unit label.");return;}
 		outputFile=new File(args[2]);
-		try {sweep = new SweepProcess(new SweepJob(startFreq,endFreq,new File("test.csv"),log));}
+		try {sweep = new SweepProcess(new SweepJob(startFreq,endFreq,null,outputFile,log));}
 		catch(IllegalArgumentException e){log.severe(e.getLocalizedMessage());return;}
 		try{sweep.startSweep(this);}
 		catch(Exception e){log.severe(e.getLocalizedMessage());return;}

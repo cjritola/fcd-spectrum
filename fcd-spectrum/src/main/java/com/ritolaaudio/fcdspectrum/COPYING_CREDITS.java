@@ -25,6 +25,7 @@ import com.ritolaaudio.fcdspectrum.license.GPL3;
 import com.ritolaaudio.fcdspectrum.license.HIDAPI;
 import com.ritolaaudio.fcdspectrum.license.LGPL2;
 import com.ritolaaudio.fcdspectrum.license.LGPL21;
+import com.ritolaaudio.fcdspectrum.license.LGPL3;
 import com.ritolaaudio.fcdspectrum.license.License;
 import com.ritolaaudio.fcdspectrum.license.LicenseEntry;
 import com.ritolaaudio.fcdspectrum.license.MPL2;
@@ -51,18 +52,31 @@ public class COPYING_CREDITS extends CopyingCredits
 		{
 		return new LicenseEntry[]
 			{
-			new LicenseEntry("fcd-spectrum","Copyright 2013 Chuck Ritola", new License[]{new GPL3()}),
+			new LicenseEntry("fcd-spectrum","Copyright 2013 Chuck Ritola<br><br>"+INTRO_DISCLAIMER, new License[]{new GPL3()}),
 			new LicenseEntry("JTransforms","Piotr Wendykier (http://sites.google.com/site/piotrwendykier/software/jtransforms)",
 					new License[]{new GPL2(),new MPL2(), new LGPL2()}),
 			new LicenseEntry("jFCDPP","Copyright 2013 Chuck Ritola", new License[]{new LGPL21()}),
-			new LicenseEntry("HIDAPI","Alan Ott <alan@signal11.us>:\n" + 
-					"Original Author and Maintainer\n" + 
-					"Linux, Windows, and Mac implementations\n" + 
-					"\n" + 
-					"Ludovic Rousseau <rousseau@debian.org>:\n" + 
-					"Formatting for Doxygen documentation\n" + 
-					"Bug fixes\n" + 
-					"Correctness fixes",new License[]{new BSD3Clause(),new GPL3(),new HIDAPI()})
+			new LicenseEntry("HIDAPI","Alan Ott <alan@signal11.us>:\n<br>" + 
+					"Original Author and Maintainer\n<br>" + 
+					"Linux, Windows, and Mac implementations\n<br>" + 
+					"\n<br>" + 
+					"Ludovic Rousseau <rousseau@debian.org>:\n<br>" + 
+					"Formatting for Doxygen documentation\n<br>" + 
+					"Bug fixes\n<br>" + 
+					"Correctness fixes",new License[]{new BSD3Clause(),new GPL3(),new HIDAPI()}),
+			new LicenseEntry("USB4Java","Klaus Reimer <k@ailis.de>:<br>\n" + 
+					"Developer\n<br>" + 
+					"\n<br>" + 
+					"Luca Longinotti <l@longi.li>:\n<br>" + 
+					"Developer\n<br>" + 
+					"<br><br> This library is free software: you can redistribute it and/or modify it under " +
+					"the terms of the GNU Lesser General Public License as published by the " +
+					"Free Software Foundation, either version 3 of the License, or (at your option) " +
+					"any later version.\n" + 
+					"<br><br>" + 
+					"This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; " +
+					"without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. " +
+					"See the GNU Lesser General Public License for more details.",new License[]{new LGPL3()})
 			};
 		}//end constructor
 
