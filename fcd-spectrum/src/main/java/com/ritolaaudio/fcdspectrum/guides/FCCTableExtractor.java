@@ -205,7 +205,7 @@ public class FCCTableExtractor
 		{return this.getAt(x, y)==null;}
 	
 	private void processTopLevelLine()
-		{
+		{/*
 		currentLine = lines.nextLine();
 		//System.out.println("Top-level line: "+currentLine);
 		if(currentLine.length()==0)return;//Ignore empty lines
@@ -213,7 +213,7 @@ public class FCCTableExtractor
 			{frequencyUnitSwitch();}
 		else if(currentLine.contains("-")&&currentLine.length()>2&&currentLine.matches(".*\\d.*")&&!currentLine.contains(" "))
 			{frequencyRangeEntry();}//Probably a frequency range entry
-		}
+		*/}
 	
 	private void setAt(int x, int y, Object obj)
 		{
@@ -228,18 +228,18 @@ public class FCCTableExtractor
 		{return table.get(new XYPosition(x,y));}
 	
 	private boolean isName()
-		{return !currentLine.matches(".*\\d.*")&&currentLine.length()>2;}
+		{/*return !currentLine.matches(".*\\d.*")&&currentLine.length()>2;*/return false;}
 	
 	private void frequencyUnitSwitch()
-		{
+		{/*
 		if(currentLine.toUpperCase().contains("KHZ"))
 			{currentUnit=FreqUnit.KHz;}
 		if(currentLine.toUpperCase().contains("MHZ"))
 			{currentUnit=FreqUnit.MHz;}
 		if(currentLine.toUpperCase().contains("GHZ"))
 			{currentUnit=FreqUnit.GHz;}
-		else {/*System.out.println("Could not find frequency unit in line: "+currentLine);*/}
-		}
+		else {}
+		*/}
 	
 	private static String prettyText(String orig)
 		{
