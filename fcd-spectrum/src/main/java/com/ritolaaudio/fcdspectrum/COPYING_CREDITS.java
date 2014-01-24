@@ -35,7 +35,7 @@ public class COPYING_CREDITS extends CopyingCredits
 	private static final String PROJECT_NAME="fcd-spectrum";
 	private static final String  [] AUTHORS=new String[]{"Chuck Ritola"};
 	private static final String CONTACT_INFO="<cjritola@gmail.com>";
-	private static final int [] COPYRIGHT_YEARS=new int[]{2013};
+	private static final int [] COPYRIGHT_YEARS=new int[]{2013,2014};
 	private static final String DESCRIPTION=
 			"A sweeping spectrum analyzer for the FunCube Dongle Pro+";
 	private static final String INTRO_DISCLAIMER = 
