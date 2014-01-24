@@ -39,7 +39,7 @@ public class AdvancedFrequencyGuide implements FrequencyGuide
 								{
 								g=g instanceof AdvancedFrequencyGuide?g:new AdvancedFrequencyGuide(g);
 								g.getSubguides(dest);
-								System.out.println(timeAtEvent+" Added "+g.getName()+" "+g);
+								//System.out.println(timeAtEvent+" Added "+g.getName()+" "+g);
 								}
 							return true;
 							}

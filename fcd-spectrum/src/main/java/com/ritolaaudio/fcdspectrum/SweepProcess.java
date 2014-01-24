@@ -47,6 +47,7 @@ public class SweepProcess implements SweepControl
 	private SweepProcessFeedback feedback;
 	private boolean running=true;
 	private Logger log;
+	private int step;
 	
 	public SweepProcess(SweepJob job)
 		{this.job=job; log=job.getLog();}
@@ -102,10 +103,10 @@ public class SweepProcess implements SweepControl
 		new Thread(){
 			public void run(){
 				Thread.currentThread().setName("Sweep Thread");
-				log.info("Sweep thread started...");
+				log.info("Sweep thread started. Reporting every 10th step...");
 				feedback.initializing();
 				try{
-				for(int step=0; step<numSteps;step++){
+				for(step=0; step<numSteps;step++){
 				  for(double subStep=step; subStep<step+.5; subStep+=.25){
 				  adjustFrequency(subStep);
 				  waitForStabilization();
@@ -158,7 +159,7 @@ public class SweepProcess implements SweepControl
 	
 	private void adjustGain()
 		{
-				log.info("SweepProcess.adjustGain()...");
+				if(step%10==0)log.info("SweepProcess.adjustGain()...");
 				double adjustmentInGain = IDEAL_GAIN/reader.getPeakMagnitude();
 				double adjustmentInDb = gain2Db(adjustmentInGain);
 				/*System.out.print("peak magnitude: "+reader.getPeakMagnitude()+" ideal magnitude: "+IDEAL_GAIN+"\n"+

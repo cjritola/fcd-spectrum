@@ -287,8 +287,8 @@ public class SweepProgressDialog extends JDialog implements SweepProcessFeedback
 
 	@Override
 	public void performingSample(final int startFrequency, final int gain, final int step)
-		{
-		log.info("SweepProgressDialog received performingSample(...) from SweepProcess. start="+startFrequency+" gain="+gain+" step="+step);
+		{//Don't get too chatty because long sweeps can bog down the log.... hah that rhymed. (:
+		if(step%10==0)log.info("SweepProgressDialog received performingSample(...) from SweepProcess. start="+startFrequency+" gain="+gain+" step="+step);
 		EventQueue.invokeLater(new Runnable()
 			{
 				public void run()

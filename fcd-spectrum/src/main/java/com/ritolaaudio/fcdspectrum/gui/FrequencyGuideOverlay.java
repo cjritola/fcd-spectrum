@@ -42,9 +42,9 @@ public class FrequencyGuideOverlay extends JPanel
 							final int labelHash = e.getName().hashCode();
 							final Color labelRawColor = new Color(labelHash);
 							itemCount[0]++;
-							System.out.println("item "+e.getName()+" x="+x+" guideWidt="+guideWidth+" width="+width);
-							System.out.println("startfreq="+e.startFreq());
-							System.out.println("windowFreqLen="+windowFreqLen+" freq2PixScale="+freq2PixelScalar);
+							//System.out.println("item "+e.getName()+" x="+x+" guideWidt="+guideWidth+" width="+width);
+							//System.out.println("startfreq="+e.startFreq());
+							//System.out.println("windowFreqLen="+windowFreqLen+" freq2PixScale="+freq2PixelScalar);
 							g.setColor(new Color(
 									labelRawColor.getRed(),
 									labelRawColor.getGreen(),
