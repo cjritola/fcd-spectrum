@@ -251,7 +251,7 @@ public class GUI
 		panel.add(chckbxAuto);
 		
 		final JSpinner spinner = new JSpinner();
-		spinner.setModel(new SpinnerNumberModel(0, 0, 50, 1));
+		spinner.setModel(new SpinnerNumberModel(0, 0, 90, 1));
 		spinner.setEnabled(Configuration.CONFIGURATION.getManualGain()!=null);
 		if(spinner.isEnabled()){spinner.setValue(Configuration.CONFIGURATION.getManualGain());}
 		panel.add(spinner);
