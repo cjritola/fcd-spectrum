@@ -33,6 +33,7 @@ public class Configuration
 	private int endFreq=108000000;
 	private Class<?> backend = com.ritolaaudio.jfcdpp.autoselect.Dongles.class;
 	private Integer manualGain = null;
+	private int fftSize=1024;
 	
 	public static final Configuration CONFIGURATION;
 	
@@ -162,5 +163,19 @@ public class Configuration
 	 */
 	public void setManualGain(Integer manualGain) {
 	    this.manualGain = manualGain;
+	}
+
+	/**
+	 * @return the fftSize
+	 */
+	public int getFftSize() {
+	    return fftSize;
+	}
+
+	/**
+	 * @param fftSize the fftSize to set
+	 */
+	public void setFftSize(int fftSize) {
+	    this.fftSize = fftSize;
 	}
 	}//end Configuration
