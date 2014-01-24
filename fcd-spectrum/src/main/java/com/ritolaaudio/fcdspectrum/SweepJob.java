@@ -25,16 +25,17 @@ public class SweepJob
 	{
 	private double startFrequency,endFrequency;
 	private File targetFile;
-	private int bufferSize=1024;
+	private final int fftSize;
 	private Logger log;
 	private final Integer mixerGain;//null means auto
 	
-	public SweepJob(double startFrequency, double endFrequency, Integer gainValue, File targetFile, Logger log) throws IllegalArgumentException
+	public SweepJob(double startFrequency, double endFrequency, Integer gainValue, File targetFile, int fftSize, Logger log) throws IllegalArgumentException
 		{
 		if(startFrequency<getMinFrequency() || startFrequency>getMaxFrequency())
 			throw new IllegalArgumentException("Start frequency must be between "+getMinFrequency()+" and "+getMaxFrequency()+". Got "+startFrequency);
 		if(endFrequency<getMinFrequency() || endFrequency>getMaxFrequency())
 			throw new IllegalArgumentException("End frequency must be between "+getMinFrequency()+" and "+getMaxFrequency()+". Got "+startFrequency);
+		this.fftSize=fftSize;
 		this.startFrequency=startFrequency;
 		this.endFrequency=endFrequency;
 		this.targetFile=targetFile;
@@ -70,9 +71,9 @@ public class SweepJob
 	/**
 	 * @return the bufferSize
 	 */
-	public int getBufferSizeInFrames()
+	public int getFFTSizeInFrames()
 		{
-		return bufferSize;
+		return fftSize;
 		}
 
 	/**

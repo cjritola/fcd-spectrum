@@ -180,8 +180,7 @@ public class GUI
 		gbc_endFrequency.gridx = 1;
 		gbc_endFrequency.gridy = 1;
 		root.add(endFrequency, gbc_endFrequency);
-		endFrequency.addChangeListener(new ChangeListener()
-			{
+		endFrequency.addChangeListener(new ChangeListener(){
 			@Override
 			public void stateChanged(ChangeEvent arg0)
 				{Configuration.CONFIGURATION.setEndFreq((Integer)endFrequency.getValue());}
@@ -203,15 +202,24 @@ public class GUI
 		gbc_lblFftSize.gridy = 2;
 		root.add(lblFftSize, gbc_lblFftSize);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"64", "128", "256", "512", "1024", "2048", "4096"}));
-		comboBox.setSelectedIndex(4);
+		final JComboBox<String> fftSizeCombo = new JComboBox<String>();
+		fftSizeCombo.setModel(new DefaultComboBoxModel<String>(new String[] {"16","32","64", "128", "256", "512", "1024", "2048", "4096","8192"}));
+		fftSizeCombo.setSelectedItem(Configuration.CONFIGURATION.getFftSize());
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_comboBox.gridx = 1;
 		gbc_comboBox.gridy = 2;
-		root.add(comboBox, gbc_comboBox);
+		root.add(fftSizeCombo, gbc_comboBox);
+		fftSizeCombo.addActionListener(new ActionListener(){
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+			final int fftSize =Integer.parseInt((String)fftSizeCombo.getSelectedItem());
+			Configuration.CONFIGURATION.setFftSize(fftSize);
+			guiLogger.info("User changed fft size to "+fftSize);
+		    }
+		    
+		});
 		
 		JLabel lblSamples = new JLabel("Samples");
 		GridBagConstraints gbc_lblSamples = new GridBagConstraints();
@@ -324,9 +332,13 @@ public class GUI
 		JButton executeButton = new JButton("Execute");
 		infoPanel.add(executeButton);
 		executeButton.addActionListener(new ActionListener()
-			{public void actionPerformed(ActionEvent evt)
-				{
-				new SweepProgressDialog(new SweepJob((Integer)startFrequency.getValue(),(Integer)endFrequency.getValue(),!chckbxAuto.isSelected()?(Integer)spinner.getValue():null,outputFile,guiLogger));
+			{public void actionPerformed(ActionEvent evt){
+				new SweepProgressDialog(new SweepJob(
+					(Integer)startFrequency.getValue(),
+					(Integer)endFrequency.getValue(),
+					!chckbxAuto.isSelected()?(Integer)spinner.getValue():null,
+					outputFile,Integer.parseInt((String)fftSizeCombo.getSelectedItem()),
+					guiLogger));
 				guiLogger.info("User clicked 'execute'");
 				}});
 		

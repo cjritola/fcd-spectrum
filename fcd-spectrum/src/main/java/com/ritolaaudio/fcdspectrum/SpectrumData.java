@@ -169,10 +169,11 @@ public class SpectrumData
 	/**
 	 * @return the minPower
 	 */
-	public double getMinPower()
-		{
-		return minPower;
-		}
+	public double getMinPower(){
+	    // -192.5 is the thermal NF at 4K in space (https://en.wikipedia.org/wiki/DBm)
+	    // Less than this is usually not sane. (:
+	    return Math.max(minPower,-192.5);
+	}
 
 	/**
 	 * @return the maxPower

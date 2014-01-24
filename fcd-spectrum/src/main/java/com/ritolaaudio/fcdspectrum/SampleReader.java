@@ -31,7 +31,7 @@ import com.ritolaaudio.jfcdpp.TunerException;
 public class SampleReader
 	{
 	//private final DoubleBuffer complexBuffer = DoubleBuffer.wrap(new double[1024*2]);
-	private final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[4*1024*2]).order(ByteOrder.BIG_ENDIAN);
+	private final ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[4*Configuration.CONFIGURATION.getFftSize()*2]).order(ByteOrder.BIG_ENDIAN);
 	private final ShortBuffer shortBuffer = byteBuffer.asShortBuffer();
 	private final Tuner tuner;
 	private final TargetDataLine line;
@@ -54,7 +54,7 @@ public class SampleReader
 		{
 		int framesRead;
 		final int bytesToRead=(bufferToUse.length*(line.getFormat().getSampleSizeInBits()/8));
-		//System.out.println("bytesToRead="+bytesToRead+" sampleSizeInBits="+line.getFormat().getSampleSizeInBits());
+		//System.out.println("bytesToRead="+bytesToRead+" sampleSizeInBits="+line.getFormat().getSampleSizeInBits()+" byteBuffer.length="+byteBuffer.capacity());
 		//for(int i=0; i<30; i++)line.read(byteBuffer.array(), 0, bytesToRead);//This eats the zero chunks.
 		//while(line.available()<bytesToRead){try{Thread.sleep(50);System.out.println("avail: "+line.available());}catch(InterruptedException e){e.printStackTrace();}}
 		//if(line.available()<bytesToRead)System.out.println("Underflow ahead... "+line.available());

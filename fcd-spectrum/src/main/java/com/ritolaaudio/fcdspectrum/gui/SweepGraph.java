@@ -132,8 +132,7 @@ public class SweepGraph extends JPanel
 			{
 			final double power = powerValues.get((int)index);
 			//System.out.print(power+" ");
-			if(power>=getMinPower() && power<=getMaxPower())
-				{
+			if(power>=getMinPower() && power<=getMaxPower()){
 				final double normPower=power/getMinPower();
 				//System.out.print(normPower+" "+" power="+power);
 				final int y = (int)((normPower*(double)this.getHeight()));

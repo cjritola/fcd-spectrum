@@ -61,11 +61,11 @@ public class SweepProcess implements SweepControl
 		log.info("Creating SampleReader...");
 		reader = new SampleReader(tuner);
 		log.info("Creating FFT Reader...");
-		try{fftReader = new FFTReader(reader,job.getBufferSizeInFrames());
-		SweepProcess.this.FREQUENCY_FFT_UNIT_SIZE=(double)tuner.getTargetDataLine().getFormat().getSampleRate()/(double)job.getBufferSizeInFrames();}
+		try{fftReader = new FFTReader(reader,job.getFFTSizeInFrames());
+		SweepProcess.this.FREQUENCY_FFT_UNIT_SIZE=(double)tuner.getTargetDataLine().getFormat().getSampleRate()/(double)job.getFFTSizeInFrames();}
 		catch(TunerException e){e.printStackTrace();}
-		log.info("FFT size set to "+SweepProcess.this.FREQUENCY_FFT_UNIT_SIZE);
-		complexBuffer = new double[job.getBufferSizeInFrames()*2];
+		log.info("FFT unit size is "+SweepProcess.this.FREQUENCY_FFT_UNIT_SIZE+" Hz");
+		complexBuffer = new double[job.getFFTSizeInFrames()*2];
 		log.info("Created complexBuffer of size "+complexBuffer.length);
 		log.info("Creating PrintStream for target file");
 		final File targetFile = job.getTargetFile();
@@ -110,7 +110,6 @@ public class SweepProcess implements SweepControl
 				  adjustFrequency(subStep);
 				  waitForStabilization();
 				  measurePeak();
-				  System.out.println("Gain:"+job.getManualGain());
 				  if(job.getManualGain()==null){
 				    adjustGain();
 				    waitForStabilization();
@@ -179,12 +178,12 @@ public class SweepProcess implements SweepControl
 				feedback.performingSample(tuner.getFrequencyInHz(),tuner.getGainInDb(),(int)step);
 				final double [] fftBuffer = fftReader.readFFT();
 				//Magnitude is the hypotenuse of real and complex
-				final int F_MAX=job.getBufferSizeInFrames()/2;
+				final int F_MAX=job.getFFTSizeInFrames()/2;
 				for(int s=0; s<framesRead; s++)
 					{
 					//TODO: Look into if this wraparound may actually be the result of I/Q being backwards.
-					final int fIndex=(s+F_MAX)%job.getBufferSizeInFrames();
-					final int sweepIndex=(int)(((step-.5)*(double)job.getBufferSizeInFrames()))+s;
+					final int fIndex=(s+F_MAX)%job.getFFTSizeInFrames();
+					final int sweepIndex=(int)(((step-.5)*(double)job.getFFTSizeInFrames()))+s;
 					//Double-Triangular weighting
 					final double weight = ((framesRead/2)-Math.abs(((2*s)%framesRead)-(framesRead/2)))/(double)(framesRead/2);
 					final double valueToWrite = 
