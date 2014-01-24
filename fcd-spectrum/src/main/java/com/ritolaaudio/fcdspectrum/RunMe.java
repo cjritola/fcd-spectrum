@@ -27,11 +27,8 @@ public class RunMe
 	 * @param args
 	 * @since Jun 23, 2013
 	 */
-	public static void main(String[] args)
-		{
+	public static void main(String[] args){
 		CopyingCredits.printIntro(System.out);
-		Configuration.CONFIGURATION.setBackend(com.ritolaaudio.jfcdpp.autoselect.Dongles.class);
-		//Configuration.CONFIGURATION.setBackend(com.ritolaaudio.jfcdpp.javahidapi.Dongles.class);
 		if(!CopyingCredits.attemptLicenseDeployment(args))
 			{if(args.length==0)
 				{GUI.main(null);}
