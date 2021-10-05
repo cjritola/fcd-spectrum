@@ -80,6 +80,7 @@ public class FCDPPTuner implements Tuner
 	
 	private void getAudioDevice() throws AudioCaptureAcquisitionException
 		{
+	    	boolean likelyButNoCapture = false;
 		for(Info mixerInfo:AudioSystem.getMixerInfo())
 			{
 			System.out.println("\n Mixer: "+mixerInfo.getName()+
@@ -111,14 +112,19 @@ public class FCDPPTuner implements Tuner
 						{throw new AudioCaptureAcquisitionException(e);}
 					}
 				else
-					{throw new AudioCaptureAcquisitionException("Found a likely card but it doesn't have any capture ports.");}
+					{likelyButNoCapture = true;}
 				/*for(Line.Info lInfo:mixer.getTargetLineInfo())
 					{
 					System.out.println(lInfo);
 					}*/
 				}//end if(V20)
 			}//end for(MixerInfo)
-		if(capture==null){throw new AudioCaptureNotFoundException("Consider unplugging the dongle, wait 5 seconds and re-plugging it in, wait another 5 seconds and retry.");}
+		if(capture==null) {
+		    if(likelyButNoCapture)
+			throw new AudioCaptureAcquisitionException("Found a likely card but it doesn't have any capture ports.");
+		    else
+			throw new AudioCaptureNotFoundException("Consider unplugging the dongle, wait 5 seconds and re-plugging it in, wait another 5 seconds and retry.");
+		    }
 		}//end getAudioDevice()
 	
 	@Override
